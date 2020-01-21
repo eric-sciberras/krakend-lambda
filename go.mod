@@ -1,4 +1,4 @@
-module github.com/devopsfaith/krakend-lambda
+module github.com/eric-sciberras/krakend-lambda
 
 go 1.12
 

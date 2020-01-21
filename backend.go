@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	Namespace = "github.com/devopsfaith/krakend-lambda"
+	Namespace = "github.com/eric-sciberras/krakend-lambda"
 )
 
 var (
