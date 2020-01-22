@@ -45,6 +45,7 @@ func BackendFactoryWithInvoker(bf proxy.BackendFactory, invokerFactory func(*Opt
 	return func(remote *config.Backend) proxy.Proxy {
 		ecfg, err := getOptions(remote)
 		if err != nil {
+			fmt.println(err)
 			return bf(remote)
 		}
 
@@ -55,10 +56,11 @@ func BackendFactoryWithInvoker(bf proxy.BackendFactory, invokerFactory func(*Opt
 		return func(ctx context.Context, r *proxy.Request) (*proxy.Response, error) {
 			payload, err := ecfg.PayloadExtractor(r)
 			if err != nil {
+				fmt.println(err)
 				return nil, err
 			}
 			input := &lambda.InvokeInput{
-				ClientContext:  aws.String(base64.StdEncoding.EncodeToString([]byte("{ \"client\": {\"app_title\": \"KrakenD\"} }"))),
+				// ClientContext:  aws.String(base64.StdEncoding.EncodeToString([]byte("{ \"client\": {\"app_title\": \"KrakenD\"} }"))),
 				FunctionName:   aws.String(ecfg.FunctionExtractor(r)),
 				InvocationType: aws.String("RequestResponse"),
 				LogType:        aws.String("Tail"),
@@ -68,6 +70,7 @@ func BackendFactoryWithInvoker(bf proxy.BackendFactory, invokerFactory func(*Opt
 
 			result, err := i.InvokeWithContext(ctx, input)
 			if err != nil {
+				fmt.println(err)
 				return nil, err
 			}
 			if result.StatusCode == nil || *result.StatusCode != 200 {
@@ -76,6 +79,7 @@ func BackendFactoryWithInvoker(bf proxy.BackendFactory, invokerFactory func(*Opt
 
 			data := map[string]interface{}{}
 			if err := json.Unmarshal(result.Payload, &data); err != nil {
+				fmt.println(err)
 				return nil, err
 			}
 			response := ef.Format(proxy.Response{
@@ -168,6 +172,7 @@ func fromParams(r *proxy.Request) ([]byte, error) {
 		params[strings.ToLower(k)] = v
 	}
 	err := json.NewEncoder(buf).Encode(params)
+	fmt.println(err)
 	return buf.Bytes(), err
 }
 
