@@ -7,7 +7,7 @@ import (
 	"errors"
 	"io/ioutil"
 	"strings"
-
+	"encoding/base64"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/request"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -58,7 +58,7 @@ func BackendFactoryWithInvoker(bf proxy.BackendFactory, invokerFactory func(*Opt
 				return nil, err
 			}
 			input := &lambda.InvokeInput{
-				// ClientContext:  aws.String("KrakenD"),
+				ClientContext:  aws.String(base64.StdEncoding.EncodeToString([]byte("{ \"client\": {\"app_title\": \"KrakenD\"} }"))),
 				FunctionName:   aws.String(ecfg.FunctionExtractor(r)),
 				InvocationType: aws.String("RequestResponse"),
 				LogType:        aws.String("Tail"),
